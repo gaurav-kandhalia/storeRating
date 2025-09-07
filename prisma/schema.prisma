@@ -21,11 +21,6 @@ enum Role {
   StoreOwner
 }
 
-
-
-
-
-
 model User {
   id        Int       @id @default(autoincrement())
   name      String    @db.VarChar(60)
@@ -33,6 +28,7 @@ model User {
   password  String
   address   String    @db.VarChar(400)
   role      Role      @default(USER)
+  refreshToken String?   @db.Text
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
