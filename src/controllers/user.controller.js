@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt'
 import prisma from '../db/db.js';
+import { Role } from '../../generated/prisma/index.js'; // Add this import
 
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
@@ -9,7 +10,7 @@ import { asyncHandler } from '../utils/AsyncHandler.js';
 
 export const registerUser = asyncHandler(async (req,res)=>{
     console.log("user register")
-   const {name,email,password,address} = req.body;
+   const {name,email,password,address,role} = req.body;
    if(!name || !email || !password || !address){
     throw new ApiError(400,"Name, email and password address are required");
    }
@@ -20,15 +21,21 @@ export const registerUser = asyncHandler(async (req,res)=>{
    }
 
    const hashedPassword = await bcrypt.hash(password,10);
-
+   console.log("Role...............",Role)
+   console.log("role//////////",role)
+   
+   const normalizedRole = Object.keys(Role).find(
+    key => key.toLowerCase() === (role || '').toLowerCase()
+  );
+  const prismaRole = normalizedRole ? Role[normalizedRole] : Role.USER;
      
     const user = await prisma.user.create({
-        data:{
+        data: {
             name,
             email,
-            password:hashedPassword,
+            password: hashedPassword,
             address,
-            role:'USER'
+            role: prismaRole
         }
     });
 
@@ -38,13 +45,13 @@ export const registerUser = asyncHandler(async (req,res)=>{
 
      const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
-
+20
      await prisma.user.update({
       where: { id: user.id },
       data: { refreshToken },
     });
 
-    res.status(201).json(new ApiResponse(201,{user:{id:user.id,name:user.name,address:user.address,email:user.email},accessToken,refreshToken},"User registered successfully"));
+    res.status(201).json(new ApiResponse(201,{user:{id:user.id,name:user.name,address:user.address,email:user.email,role:user.role},accessToken,refreshToken},"User registered successfully"));
 
 
 })
@@ -103,3 +110,5 @@ export const updatePassword = asyncHandler(async (req,res)=>{
     res.status(200).json(new ApiResponse(200,null,"Password updated successfully"));
 }
 )
+
+

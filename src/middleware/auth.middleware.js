@@ -73,16 +73,12 @@ export const isAuthenticated = asyncHandler(async (req, _, next) => {
 
 export const isStoreOwner = asyncHandler(async (req, _, next) => {
     try {
-    const user = await prisma.user.findUnique({
-        where: { id: req.user.id },
-        select: { role: true },
-        });
-        if (!user || user.role !== "STORE_OWNER") {
-        return res.status(403).json({
-            message: "You are not authorized to perform this action",
-        });
-        } 
-        next();
+      if (!req.user || req.user.role !== "StoreOwner") {
+    return res.status(403).json({
+      message: "You are not authorized to perform this action",
+    });
+  }
+  next();
     }
     catch (error) {
         return res.status(500).json({
