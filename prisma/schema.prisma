@@ -57,5 +57,5 @@ model Rating{
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([userId, storeId])
+   @@unique([userId, storeId])
 }
