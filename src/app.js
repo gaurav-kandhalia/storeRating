@@ -2,6 +2,7 @@ import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import userRouter from './routes/normalUser.router.js';
+import adminRouter from './routes/Admin.router.js';
  const app = express();
 
 app.use(morgan("dev"))
@@ -18,6 +19,7 @@ app.use(express.urlencoded({
 }))
 
 app.use("/api/v1/user",userRouter);
+app.use("/api/v1/admin",adminRouter);
 
 app.get("/",(_,res)=>{
     res.send("Server is running....")

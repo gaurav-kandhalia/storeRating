@@ -49,27 +49,27 @@ export const isAuthenticated = asyncHandler(async (req, _, next) => {
   }
 });
 
-export const isAdmin = asyncHandler(async (req, _, next) => {
-      try {
-    const user = await prisma.user.findUnique({
-      where: { id: req.user.id }, 
-      select: { role: true },
-    });
+// export const isAdmin = asyncHandler(async (req, _, next) => {
+//       try {
+//     const user = await prisma.user.findUnique({
+//       where: { id: req.user.id }, 
+//       select: { role: true },
+//     });
 
-    if (!user || user.role !== "ADMIN") {
-      return res.status(403).json({
-        message: "You are not authorized to perform this action",
-      });
-    }
+//     if (!user || user.role !== "ADMIN") {
+//       return res.status(403).json({
+//         message: "You are not authorized to perform this action",
+//       });
+//     }
 
-    next();
-  } catch (error) {
-    return res.status(500).json({
-      message: "Something went wrong while checking admin role",
-      error: error.message,
-    });
-  }
-});
+//     next();
+//   } catch (error) {
+//     return res.status(500).json({
+//       message: "Something went wrong while checking admin role",
+//       error: error.message,
+//     });
+//   }
+// });
 
 export const isStoreOwner = asyncHandler(async (req, _, next) => {
     try {
@@ -90,4 +90,14 @@ export const isStoreOwner = asyncHandler(async (req, _, next) => {
         error: error.message,
         });
     }
+});
+
+
+export const isAdmin = asyncHandler(async (req, res, next) => {
+  if (!req.user || req.user.role !== "ADMIN") {
+    return res.status(403).json({
+      message: "You are not authorized to perform this action",
+    });
+  }
+  next();
 });
